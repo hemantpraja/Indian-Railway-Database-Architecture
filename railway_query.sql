@@ -1,6 +1,7 @@
-create database Railway_Management4;
-use Railway_Management4;
+create database Railway_Management6;
+use Railway_Management6;
 
+drop database Railway_Management6;
 --------------------------------------------------------------------------------------------------------------
 create table user(
 	user_id varchar(20) primary key,
@@ -34,7 +35,9 @@ insert into train values(12185,'Rewanchal Express',23);
 create table cancelled_train(
     train_id bigint not null ,
     cancel_date date not null,
-    cancel_day varchar(15) not null
+    cancel_day varchar(15) not null,
+    foreign key (train_id) references train(train_id)
+    
 );
 
 INSERT INTO cancelled_train values(12185,'2023-06-11','Sunday');
@@ -45,7 +48,7 @@ create table station(
    station_id int primary key auto_increment,
    station_name varchar(100) not null,
    station_code varchar(20) not null
-   );
+);
    
    
    insert into station (station_name,station_code) values('Rewa','REWA');
@@ -67,10 +70,10 @@ create table station_schedule(
 	FOREIGN KEY (station_id) REFERENCES station(station_id)
 );
 
-insert into station_schedule values(12185,1,2,' Sunday Monday Tuesday Wednsday Thursday Friday Saturday','08:00:00','08:30:00');
-insert into station_schedule values(12185,3,4,' Sunday Monday Tuesday Wednsday Thursday Friday Saturday','19:15:00','21:15:00');
-insert into station_schedule values(12185,5,3,' Sunday Monday Tuesday Wednsday Thursday Friday Saturday','11:00:00','11:15:00');
-insert into station_schedule values(12185,5,3,' Sunday Monday Tuesday Wednsday Thursday Friday Saturday','04:00:00','04:15:00');
+insert into station_schedule values(12185,1,2,' Sunday Monday Tuesday Wednsday Thursday Friday Saturday ','08:00:00','08:30:00');
+insert into station_schedule values(12185,3,4,' Sunday Monday Tuesday Wednsday Thursday Friday Saturday ','19:15:00','21:15:00');
+insert into station_schedule values(12185,5,3,' Sunday Monday Tuesday Wednsday Thursday Friday Saturday ','11:00:00','11:15:00');
+insert into station_schedule values(12185,5,3,' Sunday Monday Tuesday Wednsday Thursday Friday Saturday ','04:00:00','04:15:00');
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -93,7 +96,7 @@ create table coach_type(
 	coach_id int primary key auto_increment ,
     coach_name varchar(50) not null,
     coach_code varchar(10) not null unique
-   ); 
+); 
    
 insert into coach_type(coach_name,coach_code) values("Sleeper",'SL');
 insert into coach_type(coach_name,coach_code) values("General",'GEN');
@@ -210,18 +213,16 @@ create table passenger(
     preference_coach_id int not null,
     preference_birth_id int not null,
     preference_coach_number varchar(10),
-    naminee_name varchar(50),
-    nominee_adthar_number bigint,
     foreign key(user_id) references user(user_id),
     foreign key(preference_coach_id) references coach_type(coach_id),
     foreign key(preference_birth_id) references birth_type(birth_id)
 );
 
 
-insert into passenger values(1,'vaishnavi','Vaishnavi Mishra',626364656667,7748999912,'mishra123@gmail.com',21,'female','india',1,2,'S7','Rajkishore Mishra',72737475677);
-insert into passenger values(2,'varsha','Varsha Mishra',626364656668,7748999913,'mishra1234@gmail.com',25,'female','india',1,2,'S7','Rajkishore Mishra',72737475677);
-insert into passenger values(3,'vaishnavi','Ramlakhan Pandey',626364656669,7748969812,'pandey123@gmail.com',61,'male','india',1,1,'S6','Sachin Pandey',72737475689);
-insert into passenger values(4,'vaishnavi','Hemant Prajapati',626364656632,7748929911,'prajapati@gmail.com',18,'male','india',1,2,'S5','Vishnu Datt Prajapati',72737475677);
+insert into passenger values(1,'vaishnavi','Vaishnavi Mishra',626364656667,7748999912,'mishra123@gmail.com',21,'female','india',1,2,'S7');
+insert into passenger values(2,'varsha','Varsha Mishra',626364656668,7748999913,'mishra1234@gmail.com',25,'female','india',1,2,'S7');
+insert into passenger values(3,'vaishnavi','Ramlakhan Pandey',626364656669,7748969812,'pandey123@gmail.com',61,'male','india',1,1,'S6');
+insert into passenger values(4,'vaishnavi','Hemant Prajapati',626364656632,7748929911,'prajapati@gmail.com',18,'male','india',1,2,'S5');
 -----------------------------------------------------------------------------------------------------
    
    
@@ -274,7 +275,6 @@ create table booking(
     foreign key( passenger_id4) references passenger(passenger_id),
     foreign key( passenger_id5) references passenger(passenger_id),			
     foreign key( passenger_id6) references passenger(passenger_id)
-
 );
 
 insert into booking (booking_id,user_id,train_id,booking_date,booking_time,journey_date,no_of_passenger,quota_id,source_id,destination_id,travel_ansurance,auto_upgrade,passenger_id1)
@@ -298,11 +298,11 @@ create table payment(
    foreign key( booking_id) references booking(booking_id)
 );
    
-    insert into payment values(111213,1,500,20,.50,15,'online','23PAY01BOB001',535.50); 
-	insert into payment values(111214,2,500,20,.50,15,'online','23PAY01BOB002',535.50); 
+insert into payment values(111213,1,500,20,.50,15,'online','23PAY01BOB001',535.50); 
+insert into payment values(111214,2,500,20,.50,15,'online','23PAY01BOB002',535.50); 
    
 --------------------------------------------------------------------------------------------------------------------------
-
+-- constant data
 create table ticket_status_type(
 	status_id int primary key auto_increment,
     status_type varchar(10) not null
@@ -316,9 +316,8 @@ insert into ticket_status_type(status_type) values('RLWL');
 
 ---------------------------------------------------------------------------------------------    
 
-  create table ticket(
-	pnr bigint primary key,
-    ticket_id bigint not null,
+create table ticket(
+    pnr bigint not null,
     booking_id int not null,
     passenger_id int not null,
     coach_id int not null,
@@ -327,7 +326,7 @@ insert into ticket_status_type(status_type) values('RLWL');
     birth_id int not null,
     status_id int not null,
     payment_id int not null,
-    
+    primary key(pnr,passenger_id),
      foreign key( coach_id) references coach_type(coach_id),
      foreign key( booking_id) references booking(booking_id),
       foreign key( passenger_id) references passenger(passenger_id),
@@ -336,38 +335,44 @@ insert into ticket_status_type(status_type) values('RLWL');
      foreign key( payment_id) references payment(payment_id)
 );
 
-	insert into ticket values(231101,230601,1,1,1,'S7',23,2,4,111213);
-    insert into ticket values(231102,230602,1,3,1,'S7',24,2,4,111214);
+insert into ticket values(231101,1,1,1,'S7',23,2,4,111213);
+insert into ticket values(231101,1,3,1,'S7',24,2,4,111214);
     
 ----------------------------------------------------------------------------------------------------
 
 create table cancelled_ticket(
 	pnr bigint not null,
+    passenger_id int not null,
     cancel_date date not null,
     cancel_time time not null,
     refund_status  varchar(20) not null,
     refund_amount decimal ,
-    foreign key (pnr) references ticket(pnr)
+    primary key(pnr,passenger_id),
+    foreign key (pnr) references ticket(pnr),
+    foreign key(passenger_id) references passenger(passenger_id)
 );
-insert into  cancelled_ticket values(231102,'2023-06-11','23:44:00','done',400);
+insert into  cancelled_ticket values(231101,3,'2023-06-11','23:44:00','done',400);
 
 ------------------------------------------------------------------------------------------------
 
 create table insurance_detail(
 	policy_number bigint primary key,
+    pnr bigint not null,
     passenger_id int not null,
     cover_amount bigint not null,
     policy_amount bigint not null,
-    pnr bigint not null,
+    nominee_name varchar(50) not null,
+    nominee_aadhar bigint not null,
+    unique(pnr,passenger_id),
 	foreign key (pnr) references ticket(pnr),
 	foreign key (passenger_id) references passenger(passenger_id) 
 );
 
-insert into insurance_detail values(2301,1,500000,0.50,231101);
-insert into insurance_detail values(2302,3,500000,0.50,231102);
+insert into insurance_detail values(2301,231101,1,500000,0.50,'Rajkishore Mishra',884356129834);
+insert into insurance_detail values(2302,231101,3,500000,0.50,'Rajkishore Mishra',127890342378);
 
 -----------------------------------------------------------------------------------------------------
-
+-- constant data
 create table tdr_reason(
 	reason_id int primary key auto_increment,
     reason varchar(500) not null
@@ -399,22 +404,28 @@ insert into tdr_reason(reason) values('Wrongly Charged BY TTE.');
 create table tdr_file(
 	tdr_request_id int primary key auto_increment,
     pnr bigint not null,
+    passenger_id int not null,
     reason_id int not null,
+    unique(pnr,passenger_id),
+    foreign key(passenger_id) references passenger(passenger_id),
     foreign key (pnr) references ticket(pnr),
     foreign key (reason_id) references tdr_reason(reason_id)
 );
 
-insert into tdr_file (pnr,reason_id) values(231102,1);
+insert into tdr_file (pnr,passenger_id,reason_id) values(231101,3,1);
 
 ---------------------------------------------------------------------------------------------------
 
 create table tdr(
 	 tdr_number varchar(50) primary key,
 	 tdr_request_id int not null,
+     refund_status varchar(50) not null,
+     refund_amount decimal,
 	 foreign key (tdr_request_id) references tdr_file(tdr_request_id)	
 );
 
-insert into tdr values('23tdr0601',1);
+
+insert into tdr values('23tdr0601',1,'Pending',null);
 
 ---------------------------------------------------------------------------------------------------------------------------
 
@@ -435,9 +446,31 @@ insert into station_on_route values(2,3);
 
 -----------------------------------------------------------------------------------------------------
 
+-- showing all stations on a root
  select * from station join station_on_route on station.station_id=station_on_route.station_id where route_id=1;   
  select * from station join station_on_route on station.station_id=station_on_route.station_id where route_id=2;
  
- 
+-- showing passenger names that are ends with a
  select passenger_name from passenger where passenger_name like '%a';
  
+ 
+-- showing all tickets
+select * from ticket;
+ 
+-- showing train details from pnr number
+select * from train where train_id = (select train_id from booking where booking_id = (select booking_id from ticket where pnr = 231101));
+
+-- showing train schedule by using pnr
+select * from train_schedule where train_id = (select train_id from booking where booking_id = (select booking_id from ticket where pnr = 231101));
+
+-- showing all trains schedule
+select * from train_schedule;
+select * from train_schedule where train_id = 12185;
+
+
+-- showing all stations
+select * from station;
+
+-- showing traind availibility
+select departure_time from train_schedule where train_id = 12185 and source_id = (select station_id from station where station_code ='REWA') and destination_id = (select station_id from station where station_code ='BPL') and departure_day like '%Monday%'
+
